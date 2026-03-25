@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Sushi Talence - Menu</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+    <h1>Sushi Talence</h1>
+    <a href="admin.html" class="espace-admin">Espace Admin</a>
+</header>
+
+    <div class="filters">
+        <button class="btn-filter">Tous</button>
+        <button class="btn-filter">Maki</button>
+        <button class="btn-filter">Nigiri</button>
+        <button class="btn-filter">Sashimi</button>
+    </div>
+
+    <div class="main-content">
+        <div class="menu-grid">
+            <div class="sushi-card">
+                <div class="sushi-img-container">
+                    <img src="https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=400" class="sushi-img">
+                </div>
+                <div class="card-content">
+                    <span class="category-tag">Maki</span>
+                    <h3>Maki Saumon</h3>
+                    <p class="price">6.50 €</p>
+                    <input type="number" value="1" min="1" class="qty" style="width: 60px; margin-bottom: 10px;">
+                    <button class="btn-commander" onclick="ajouter('Maki Saumon', 6.50, this)">Commander</button>
+                </div>
+            </div>
+
+            <div class="sushi-card">
+                <div class="sushi-img-container">
+                    <img src="https://images.unsplash.com/photo-1611143669185-af224c5e3252?w=400" class="sushi-img">
+                </div>
+                <div class="card-content">
+                    <span class="category-tag">Nigiri</span>
+                    <h3>Nigiri Thon</h3>
+                    <p class="price">7.00 €</p>
+                    <input type="number" value="1" min="1" class="qty" style="width: 60px; margin-bottom: 10px;">
+                    <button class="btn-commander" onclick="ajouter('Nigiri Thon', 7.00, this)">Commander</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-box">
+            <h2>Panier</h2>
+            <p>Total: <strong id="total-val">0.00</strong> €</p>
+            <form id="orderForm">
+                <label>Nom:</label>
+                <input type="text" id="client-nom" required>
+                <label>Adresse:</label>
+                <input type="text" id="client-adresse" required>
+                <button type="submit" class="btn-commander">Confirmer la Commande</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let totalGlobal = 0;
+
+        function ajouter(nom, prix, btn) {
+            const inputQty = btn.parentElement.querySelector('.qty');
+            const quantite = parseInt(inputQty.value);
+            
+            if (quantite > 0) {
+                totalGlobal += prix * quantite;
+                document.getElementById('total-val').innerText = totalGlobal.toFixed(2);
+                alert(quantite + "x " + nom + " ajoute au panier");
+            }
+        }
+
+        document.querySelectorAll('.btn-filter').forEach(btn => {
+            btn.onclick = () => {
+                const cat = btn.innerText.toUpperCase();
+                document.querySelectorAll('.sushi-card').forEach(card => {
+                    const tag = card.querySelector('.category-tag').innerText.toUpperCase();
+                    card.style.display = (cat === 'TOUS' || tag === cat) ? 'block' : 'none';
+                });
+            };
+        });
+
+        document.getElementById('orderForm').onsubmit = (e) => {
+            e.preventDefault();
+            if (totalGlobal === 0) {
+                alert("Votre panier est vide");
+            } else {
+                alert("Commande confirmee pour un total de " + totalGlobal.toFixed(2) + " €");
+            }
+        };
+    </script>
+</body>
+</html>
