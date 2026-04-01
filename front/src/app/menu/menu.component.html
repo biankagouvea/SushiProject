@@ -1,0 +1,87 @@
+<h2>Menu Sushi</h2>
+
+<div class="filters">
+ <button (click)="filter('TOUS')">Tous</button>
+<button (click)="filter('Maki')">Maki</button>
+<button (click)="filter('Nigiri')">Nigiri</button>
+<button (click)="filter('Sashimi')">Sashimi</button>
+</div>
+
+<hr>
+
+<div class="main-content">
+
+  <!-- Sushi 列表 -->
+  <div class="menu-grid">
+
+    <ng-container *ngFor="let sushi of sushis">
+
+      <div class="sushi-card"
+           *ngIf="selectedCategory === 'TOUS' || sushi.categorie === selectedCategory">
+
+        <div class="card-content">
+         
+         
+         <img class="sushi-img" [src]="sushi.image" alt="sushi">
+
+          <span class="category-tag">{{ sushi.categorie }}</span>
+
+          <h3>{{ sushi.nom }}</h3>
+
+          <p class="price">{{ sushi.prix }} €</p>
+
+          <input type="number"
+                 [(ngModel)]="sushi.qty"
+                 min="0"
+                 class="qty">
+
+          <button class="btn-commander"
+                  (click)="ajouter(sushi)">
+            Commander
+          </button>
+
+        </div>
+      </div>
+
+    </ng-container>
+
+  </div>
+
+  <!-- Panier -->
+  <div class="form-box">
+
+    <h2>Panier</h2>
+    <div *ngIf="cart.length > 0; else emptyCart">
+
+    <div *ngFor="let item of cart" class="cart-item">
+    {{ item.nom }} x {{ item.quantite }} 
+    = {{ item.prix * item.quantite }} €
+    </div>
+
+  </div>
+
+  <ng-template #emptyCart>
+  <p style="color: gray;">Panier vide</p>
+</ng-template>
+
+    <p>Total: <strong>{{ totalGlobal.toFixed(2) }}</strong> €</p>
+
+    <form (ngSubmit)="submitOrder()">
+
+      <label>Nom:</label>
+      <input type="text" [(ngModel)]="nom" name="nom" required>
+
+      <label>Adresse:</label>
+      <input type="text" [(ngModel)]="adresse" name="adresse" required>
+
+      <br><br>
+
+      <button type="submit" class="btn-commander">
+        Confirmer la Commande
+      </button>
+
+    </form>
+
+  </div>
+
+</div>

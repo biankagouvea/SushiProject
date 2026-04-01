@@ -1,0 +1,66 @@
+<header class="admin-header">
+  <h1>Administration</h1>
+  <button (click)="goMenu()">Voir Menu</button>
+</header>
+
+<div class="admin-container">
+
+  <div class="form-box">
+    <h2>Ajouter un Sushi</h2>
+
+    <form (submit)="onSubmit($event)">
+      <label for="nom">Nom:</label>
+      <input id="nom" type="text" name="nom" required>
+
+      <label for="categorie">Catégorie:</label>
+      <select id="categorie" name="categorie">
+        <option>Maki</option>
+        <option>Nigiri</option>
+        <option>Sashimi</option>
+      </select>
+
+      <label for="prix">Prix (€):</label>
+      <input id="prix" type="number" step="0.01" name="prix" required>
+
+      <label for="image">URL Image:</label>
+      <input id="image" type="text" name="image">
+
+      <button type="submit" class="btn-commander">
+        Sauvegarder
+      </button>
+    </form>
+  </div>
+
+  <div class="table-container">
+    <h2>Commandes reçues</h2>
+
+    <table *ngIf="commandes.length > 0; else noData">
+      <thead>
+        <tr>
+          <th>Client</th>
+          <th>Adresse</th>
+          <th>Articles</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let c of commandes">
+          <td>{{ c.nom }}</td>
+          <td>{{ c.adresse }}</td>
+          <td>
+            <div *ngFor="let item of c.items">
+              {{ item.nom }} x {{ item.qty }}
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <ng-template #noData>
+      <p style="text-align: center; padding: 20px;">
+        Aucune commande pour le moment 😴
+      </p>
+    </ng-template>
+  </div>
+
+</div>
