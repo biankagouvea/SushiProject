@@ -8,10 +8,10 @@ import {authGuard} from './auth/auth.guard';
 
 
 
-export const routes = [
-	 { path: '', component: HomeComponent },          // page d'acceuil
-	 { path: 'login', component: LoginComponent },    // connextion
-	 {path:'register', component:RegisterComponent}, // inscrire
+export const routes: Routes = [
+	 { path: '', component: HomeComponent },          // page d'accueil
+	 { path: 'login', component: LoginComponent },    // connexion
+	 {path:'register', component:RegisterComponent}, // s'inscrire
 	 { path: 'menu', component: MenuComponent },      // passer commande
-	 { path: 'admin', component: AdminComponent }     // page d'admin
+	 { path: 'admin', component: AdminComponent, canActivate: [authGuard] }     // page d'admin (protégée)
 ];

@@ -1,23 +1,35 @@
 <h2>Menu Sushi</h2>
 
 <div class="filters">
- <button (click)="filter('TOUS')">Tous</button>
-<button (click)="filter('Maki')">Maki</button>
-<button (click)="filter('Nigiri')">Nigiri</button>
-<button (click)="filter('Sashimi')">Sashimi</button>
+ <button (click)="filtrer('TOUS')">Tous</button>
+<button (click)="filtrer('Maki')">Maki</button>
+<button (click)="filtrer('Nigiri')">Nigiri</button>
+<button (click)="filtrer('Sashimi')">Sashimi</button>
 </div>
 
 <hr>
 
+<!-- Message de succès -->
+<div *ngIf="messageSuccesText" class="feedback success" style="background-color: #d4edda; color: #155724; padding: 15px; margin-bottom: 15px; border-radius: 5px; position: relative;">
+  <button class="close-feedback" (click)="fermerFeedback()" aria-label="Fermer" style="position:absolute;right:8px;top:6px;border:none;background:transparent;font-weight:bold;cursor:pointer;">x</button>
+  {{ messageSuccesText }}
+</div>
+
+<!-- Message d'erreur -->
+<div *ngIf="messageErreurText" class="feedback error" style="background-color: #f8d7da; color: #721c24; padding: 15px; margin-bottom: 15px; border-radius: 5px; position: relative;">
+  <button class="close-feedback" (click)="fermerFeedback()" aria-label="Fermer" style="position:absolute;right:8px;top:6px;border:none;background:transparent;font-weight:bold;cursor:pointer;">x</button>
+  {{ messageErreurText }}
+</div>
+
 <div class="main-content">
 
-  <!-- Sushi 列表 -->
+  <!-- Liste des Sushis -->
   <div class="menu-grid">
 
     <ng-container *ngFor="let sushi of sushis">
 
       <div class="sushi-card"
-           *ngIf="selectedCategory === 'TOUS' || sushi.categorie === selectedCategory">
+           *ngIf="categorieSelectionnee === 'TOUS' || sushi.categorie === categorieSelectionnee">
 
         <div class="card-content">
          
@@ -36,8 +48,8 @@
                  class="qty">
 
           <button class="btn-commander"
-                  (click)="ajouter(sushi)">
-            Commander
+                  (click)="ajouterAuPanier(sushi)">
+            Ajouter
           </button>
 
         </div>
@@ -51,33 +63,37 @@
   <div class="form-box">
 
     <h2>Panier</h2>
-    <div *ngIf="cart.length > 0; else emptyCart">
+    <div *ngIf="panier.length > 0; else panierVide">
 
-    <div *ngFor="let item of cart" class="cart-item">
-    {{ item.nom }} x {{ item.quantite }} 
-    = {{ item.prix * item.quantite }} €
+    <div *ngFor="let item of panier; let i = index" class="cart-item" style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+      <div>
+        {{ item.nom }} x {{ item.quantite }} = {{ (item.prix * item.quantite).toFixed(2) }} €
+      </div>
+      <div>
+        <button class="btn-remove" (click)="retirerDuPanier(i)" style="background:#eee;border:1px solid #ccc;padding:6px;border-radius:4px;cursor:pointer;">Retirer</button>
+      </div>
     </div>
 
   </div>
 
-  <ng-template #emptyCart>
+  <ng-template #panierVide>
   <p style="color: gray;">Panier vide</p>
 </ng-template>
 
     <p>Total: <strong>{{ totalGlobal.toFixed(2) }}</strong> €</p>
 
-    <form (ngSubmit)="submitOrder()">
+    <form (ngSubmit)="soumettreCommande()">
 
       <label>Nom:</label>
-      <input type="text" [(ngModel)]="nom" name="nom" required>
+      <input type="text" [(ngModel)]="nomClient" name="nomClient" required>
 
       <label>Adresse:</label>
       <input type="text" [(ngModel)]="adresse" name="adresse" required>
 
       <br><br>
 
-      <button type="submit" class="btn-commander">
-        Confirmer la Commande
+      <button type="submit" class="btn-commander" [disabled]="envoiEnCours">
+        {{ envoiEnCours ? 'Envoi en cours...' : 'Confirmer la Commande' }}
       </button>
 
     </form>

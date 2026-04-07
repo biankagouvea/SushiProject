@@ -22,21 +22,20 @@ export class LoginComponent {
 	private auth: AuthService
   ) {} //constructeur
   
-  login() {
-    console.log('Login:', this.email, this.password);
-	if (this.email && this.password) {
-
-	  localStorage.setItem('loggedIn', 'true'); // ✅ déjà connecter 
-
-	  this.router.navigate(['/menu']); // 👉  commander
-	} else {
+  connexion() {
+    console.log('Connexion:', this.email, this.password);
+	if (!this.email || !this.password) {
 	  alert('Veuillez remplir les champs');
+	  return;
 	}
-	if (this.auth.login(this.email, this.password)) {
+	if (this.auth.connexion(this.email, this.password)) {
 	    this.router.navigate(['/menu']);
-	  }
+	  } else {
+	  alert('Erreur de connexion');
+	}
   }
-    goRegister() {
-      this.router.navigate(['/register']);
-    }
+  
+  allerAuRegister() {
+    this.router.navigate(['/register']);
+  }
 }

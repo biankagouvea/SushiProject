@@ -1,24 +1,28 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  login(email: string, password: string) {
-    if (email && password) {
+  constructor(private router: Router) {}
+
+  connexion(email: string, motDePasse: string) {
+    if (email && motDePasse) {
       localStorage.setItem('loggedIn', 'true');
       return true;
     }
     return false;
   }
 
-  isLoggedIn(): boolean {
+  estConnecte(): boolean {
     return localStorage.getItem('loggedIn') === 'true';
   }
 
-  logout() {
+  deconnexion(): void {
     localStorage.removeItem('loggedIn');
+    this.router.navigate(['/login']);
   }
 
 }

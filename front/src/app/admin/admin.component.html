@@ -1,6 +1,9 @@
 <header class="admin-header">
   <h1>Administration</h1>
-  <button (click)="goMenu()">Voir Menu</button>
+  <div>
+    <button (click)="allerAuMenu()">Voir Menu</button>
+    <button (click)="seDeconnecter()" style="background-color: #dc3545; margin-left: 10px;">Déconnexion</button>
+  </div>
 </header>
 
 <div class="admin-container">
@@ -8,7 +11,7 @@
   <div class="form-box">
     <h2>Ajouter un Sushi</h2>
 
-    <form (submit)="onSubmit($event)">
+    <form (submit)="ajouterSushi($event)">
       <label for="nom">Nom:</label>
       <input id="nom" type="text" name="nom" required>
 
@@ -34,7 +37,11 @@
   <div class="table-container">
     <h2>Commandes reçues</h2>
 
-    <table *ngIf="commandes.length > 0; else noData">
+    <div *ngIf="chargementEnCours" style="text-align: center; color: #666;">
+      Chargement des commandes...
+    </div>
+
+    <table *ngIf="commandes.length > 0 && !chargementEnCours; else aucuneCommande">
       <thead>
         <tr>
           <th>Client</th>
@@ -44,21 +51,21 @@
       </thead>
 
       <tbody>
-        <tr *ngFor="let c of commandes">
-          <td>{{ c.nom }}</td>
-          <td>{{ c.adresse }}</td>
+        <tr *ngFor="let commande of commandes">
+          <td>{{ commande.nomClient }}</td>
+          <td>{{ commande.adresse }}</td>
           <td>
-            <div *ngFor="let item of c.items">
-              {{ item.nom }} x {{ item.qty }}
+            <div *ngFor="let article of commande.items">
+              {{ article.nom }} x {{ article.quantite }}
             </div>
           </td>
         </tr>
       </tbody>
     </table>
 
-    <ng-template #noData>
-      <p style="text-align: center; padding: 20px;">
-        Aucune commande pour le moment 😴
+    <ng-template #aucuneCommande>
+      <p style="text-align: center; padding: 20px; color: #999;">
+        Aucune commande pour le moment
       </p>
     </ng-template>
   </div>

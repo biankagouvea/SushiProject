@@ -8,7 +8,7 @@
   },
   "include": [
     "src/**/*.ts"
-, "src/app/menu/menu.componnetts"  ],
+  ],
   "exclude": [
     "src/**/*.spec.ts"
   ]
