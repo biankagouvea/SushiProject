@@ -5,9 +5,14 @@
 /tmp
 /out-tsc
 /bazel-out
+/front/dist
+/front/tmp
+/front/out-tsc
+/back/target
 
 # Node
 /node_modules
+/front/node_modules
 npm-debug.log
 yarn-error.log
 
@@ -31,6 +36,7 @@ yarn-error.log
 
 # Miscellaneous
 /.angular/cache
+/front/.angular/cache
 .sass-cache/
 /connect.lock
 /coverage
