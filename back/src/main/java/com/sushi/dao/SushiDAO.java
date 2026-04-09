@@ -2,6 +2,7 @@ package com.sushi.dao;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sushi.config.DataPathResolver;
 import com.sushi.model.Commande;
 import com.sushi.model.Sushi;
 
@@ -11,11 +12,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * DAO JSON pour la gestion des sushis et de la persistance des commandes.
+ */
 public class SushiDAO {
 
     private final ObjectMapper mapper = new ObjectMapper();
-    private static final String SUSHIS_FILE_PATH = "data/sushis.json";
-    private static final String COMMANDES_FILE_PATH = "data/commandes.json";
+    private static final String SUSHIS_FILE_NAME = "sushis.json";
+    private static final String COMMANDES_FILE_NAME = "commandes.json";
 
     // =========================
     // GET SUSHIS
@@ -114,9 +118,7 @@ public class SushiDAO {
     public void saveCommande(Commande c) {
 
         try {
-            File file = new File(COMMANDES_FILE_PATH);
-
-            file.getParentFile().mkdirs();
+            File file = DataPathResolver.resolveDataFile(COMMANDES_FILE_NAME);
 
             List<Commande> commandes;
 
@@ -143,19 +145,16 @@ public class SushiDAO {
     }
 
     private void saveAllSushis(List<Sushi> sushis) throws Exception {
-        File file = new File(SUSHIS_FILE_PATH);
-        file.getParentFile().mkdirs();
+        File file = DataPathResolver.resolveDataFile(SUSHIS_FILE_NAME);
         mapper.writerWithDefaultPrettyPrinter().writeValue(file, sushis);
     }
 
     private File getOrCreateSushisFile() throws Exception {
-        File file = new File(SUSHIS_FILE_PATH);
+        File file = DataPathResolver.resolveDataFile(SUSHIS_FILE_NAME);
 
-        if (file.exists()) {
+        if (file.exists() && file.length() > 2) {
             return file;
         }
-
-        file.getParentFile().mkdirs();
 
         InputStream is = getClass()
                 .getClassLoader()

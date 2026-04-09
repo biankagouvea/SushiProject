@@ -1,4 +1,12 @@
-<h2>Menu Sushi</h2>
+<section class="menu-hero">
+  <div>
+    <p class="menu-kicker">Carte du moment</p>
+    <h2>Menu Sushi</h2>
+    <p>
+      Des recettes fraîches et des pièces préparées à la commande.
+    </p>
+  </div>
+</section>
 
 <div class="filters">
  <button (click)="filtrer('TOUS')">Tous</button>
@@ -9,53 +17,50 @@
 
 <hr>
 
-<!-- Message de succès -->
-<div *ngIf="messageSuccesText" class="feedback success" style="background-color: #d4edda; color: #155724; padding: 15px; margin-bottom: 15px; border-radius: 5px; position: relative;">
-  <button class="close-feedback" (click)="fermerFeedback()" aria-label="Fermer" style="position:absolute;right:8px;top:6px;border:none;background:transparent;font-weight:bold;cursor:pointer;">x</button>
-  {{ messageSuccesText }}
-</div>
+@if (messageSuccesText) {
+  <div class="feedback success" style="background-color: #d4edda; color: #155724; padding: 15px; margin-bottom: 15px; border-radius: 5px; position: relative;">
+    <button class="close-feedback" (click)="fermerFeedback()" aria-label="Fermer" style="position:absolute;right:8px;top:6px;border:none;background:transparent;font-weight:bold;cursor:pointer;">x</button>
+    {{ messageSuccesText }}
+  </div>
+}
 
-<!-- Message d'erreur -->
-<div *ngIf="messageErreurText" class="feedback error" style="background-color: #f8d7da; color: #721c24; padding: 15px; margin-bottom: 15px; border-radius: 5px; position: relative;">
-  <button class="close-feedback" (click)="fermerFeedback()" aria-label="Fermer" style="position:absolute;right:8px;top:6px;border:none;background:transparent;font-weight:bold;cursor:pointer;">x</button>
-  {{ messageErreurText }}
-</div>
+@if (messageErreurText) {
+  <div class="feedback error" style="background-color: #f8d7da; color: #721c24; padding: 15px; margin-bottom: 15px; border-radius: 5px; position: relative;">
+    <button class="close-feedback" (click)="fermerFeedback()" aria-label="Fermer" style="position:absolute;right:8px;top:6px;border:none;background:transparent;font-weight:bold;cursor:pointer;">x</button>
+    {{ messageErreurText }}
+  </div>
+}
 
 <div class="main-content">
 
   <!-- Liste des Sushis -->
   <div class="menu-grid">
 
-    <ng-container *ngFor="let sushi of sushis">
+    @for (sushi of sushis; track sushi.id ?? sushi.nom) {
+      @if (categorieSelectionnee === 'TOUS' || sushi.categorie === categorieSelectionnee) {
+        <div class="sushi-card">
+          <div class="card-content">
+            <img class="sushi-img" [src]="sushi.image" alt="sushi">
 
-      <div class="sushi-card"
-           *ngIf="categorieSelectionnee === 'TOUS' || sushi.categorie === categorieSelectionnee">
+            <span class="category-tag">{{ sushi.categorie }}</span>
 
-        <div class="card-content">
-         
-         
-         <img class="sushi-img" [src]="sushi.image" alt="sushi">
+            <h3>{{ sushi.nom }}</h3>
 
-          <span class="category-tag">{{ sushi.categorie }}</span>
+            <p class="price">{{ sushi.prix }} €</p>
 
-          <h3>{{ sushi.nom }}</h3>
+            <input type="number"
+                   [(ngModel)]="sushi.qty"
+                   min="0"
+                   class="qty">
 
-          <p class="price">{{ sushi.prix }} €</p>
-
-          <input type="number"
-                 [(ngModel)]="sushi.qty"
-                 min="0"
-                 class="qty">
-
-          <button class="btn-commander"
-                  (click)="ajouterAuPanier(sushi)">
-            Ajouter
-          </button>
-
+            <button class="btn-commander"
+                    (click)="ajouterAuPanier(sushi)">
+              Ajouter
+            </button>
+          </div>
         </div>
-      </div>
-
-    </ng-container>
+      }
+    }
 
   </div>
 
@@ -63,22 +68,20 @@
   <div class="form-box">
 
     <h2>Panier</h2>
-    <div *ngIf="panier.length > 0; else panierVide">
-
-    <div *ngFor="let item of panier; let i = index" class="cart-item" style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
-      <div>
-        {{ item.nom }} x {{ item.quantite }} = {{ (item.prix * item.quantite).toFixed(2) }} €
-      </div>
-      <div>
-        <button class="btn-remove" (click)="retirerDuPanier(i)" style="background:#eee;border:1px solid #ccc;padding:6px;border-radius:4px;cursor:pointer;">Retirer</button>
-      </div>
-    </div>
-
-  </div>
-
-  <ng-template #panierVide>
-  <p style="color: gray;">Panier vide</p>
-</ng-template>
+    @if (panier.length > 0) {
+      @for (item of panier; track item.nom; let i = $index) {
+        <div class="cart-item" style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+          <div>
+            {{ item.nom }} x {{ item.quantite }} = {{ (item.prix * item.quantite).toFixed(2) }} €
+          </div>
+          <div>
+            <button class="btn-remove" (click)="retirerDuPanier(i)" style="background:#eee;border:1px solid #ccc;padding:6px;border-radius:4px;cursor:pointer;">Retirer</button>
+          </div>
+        </div>
+      }
+    } @else {
+      <p style="color: gray;">Panier vide</p>
+    }
 
     <p>Total: <strong>{{ totalGlobal.toFixed(2) }}</strong> €</p>
 
@@ -97,6 +100,36 @@
       </button>
 
     </form>
+
+    @if (historiqueCommandes.length > 0) {
+      <div class="history-section">
+        <h3>Historique de mes commandes</h3>
+
+        @for (commande of historiqueCommandes; track commande.id; let i = $index) {
+          <div class="history-item">
+            <div class="history-meta">
+              <strong>#{{ i + 1 }}</strong>
+              <span>{{ commande.date }}</span>
+            </div>
+            <div class="history-total">Total: {{ commande.total | number:'1.2-2' }} €</div>
+            <div class="history-items">
+              @for (item of commande.items; track item.nom) {
+                <div>
+                  {{ item.nom }} x {{ item.quantite }}
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    @if (authService.estConnecte() && historiqueCommandes.length === 0) {
+      <div class="history-section">
+        <h3>Historique de mes commandes</h3>
+        <p>Aucune commande pour le moment.</p>
+      </div>
+    }
 
   </div>
 

@@ -7,37 +7,65 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sushi.config.DataPathResolver;
 
 @RestController
 @RequestMapping("/api/commandes")
 @CrossOrigin(origins = "http://localhost:4200")
+/**
+ * Contrôleur REST de gestion des commandes.
+ * Les commandes sont stockées dans un fichier JSON local.
+ */
 public class CommandeController {
 
-    private final String FILE_PATH = "data/commandes.json";
+    private static final String FILE_NAME = "commandes.json";
     private final ObjectMapper mapper = new ObjectMapper();
 
+    private File getOrCreateCommandesFile() throws IOException {
+        File file = DataPathResolver.resolveDataFile(FILE_NAME);
+
+        if (file.exists() && file.length() > 2) {
+            return file;
+        }
+
+        mapper.writerWithDefaultPrettyPrinter().writeValue(file, new ArrayList<>());
+
+        return file;
+    }
+
+    /**
+     * Crée une commande et la persiste en JSON.
+     *
+     * @param data payload commande
+     * @return message de résultat
+     */
     @PostMapping
-    public Map<String, String> createCommande(@RequestBody Map<String, Object> data) {
+    public Map<String, Object> createCommande(@RequestBody Map<String, Object> data) {
 
         try {
-            File file = new File(FILE_PATH);
-
-            file.getParentFile().mkdirs();
+            File file = getOrCreateCommandesFile();
 
             List<Map<String, Object>> commandes;
 
-            if (file.exists()) {
+            if (file.exists() && file.length() > 2) {
                 commandes = mapper.readValue(
                         file,
                         new TypeReference<List<Map<String, Object>>>() {}
                 );
             } else {
                 commandes = new ArrayList<>();
+            }
+
+            String userEmail = toText(data.get("userEmail")).trim().toLowerCase();
+
+            if (userEmail.isEmpty()) {
+                return Map.of("message", "Utilisateur requis", "success", false);
             }
 
             Map<String, Object> normalized = normalizeCommande(data, commandes.size() + 1);
@@ -47,20 +75,29 @@ public class CommandeController {
 
             System.out.println("✔ Saved to: " + file.getAbsolutePath());
 
+            return Map.of(
+                    "message", "OK",
+                    "success", true,
+                    "id", normalized.get("id")
+            );
+
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return Map.of("message", "OK");
+        return Map.of("message", "Erreur serveur", "success", false);
     }
 
+    /**
+     * Retourne la liste des commandes normalisées.
+     *
+     * @return commandes
+     */
     @GetMapping
     public List<Map<String, Object>> getCommandes() {
 
         try {
-            File file = new File(FILE_PATH);
-
-            if (!file.exists()) return new ArrayList<>();
+            File file = getOrCreateCommandesFile();
 
             List<Map<String, Object>> commandes = mapper.readValue(
                     file,
@@ -84,10 +121,34 @@ public class CommandeController {
         }
     }
 
+    /**
+     * Retourne les commandes d'un utilisateur identifié par son email.
+     *
+     * @param email email utilisateur
+     * @return commandes associées à cet utilisateur
+     */
+    @GetMapping("/user/{email}")
+    public List<Map<String, Object>> getCommandesUtilisateur(@PathVariable String email) {
+        String emailRecherche = toText(email).trim().toLowerCase();
+        List<Map<String, Object>> toutesLesCommandes = getCommandes();
+        List<Map<String, Object>> resultat = new ArrayList<>();
+
+        for (Map<String, Object> commande : toutesLesCommandes) {
+            String commandeEmail = toText(commande.get("userEmail")).trim().toLowerCase();
+
+            if (emailRecherche.equals(commandeEmail)) {
+                resultat.add(commande);
+            }
+        }
+
+        return resultat;
+    }
+
     private Map<String, Object> normalizeCommande(Map<String, Object> data, int generatedId) {
         Map<String, Object> c = new LinkedHashMap<>();
 
         int id = parseInt(data.get("id"), generatedId);
+        String userEmail = toText(data.get("userEmail")).trim().toLowerCase();
         String nomClient = toText(data.get("nomClient"));
 
         if (nomClient.isEmpty()) {
@@ -110,6 +171,7 @@ public class CommandeController {
         }
 
         c.put("id", id);
+        c.put("userEmail", userEmail);
         c.put("nomClient", nomClient);
         c.put("nom", nomClient);
         c.put("adresse", adresse);

@@ -1,181 +1,127 @@
-body {
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    background-color: #fcfcfc;
-    color: #333;
-    margin: 0;
-    padding: 0;
+:host {
+    display: block;
+    background:
+        radial-gradient(circle at top left, rgba(214, 40, 40, 0.08), transparent 28%),
+        radial-gradient(circle at top right, rgba(15, 23, 42, 0.05), transparent 24%),
+        linear-gradient(180deg, #fff9f7 0%, #ffffff 24%, #fafafa 100%);
+    min-height: 100vh;
+}
+
+.global-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    width: 100%;
+    backdrop-filter: blur(14px);
+    background: rgba(255, 255, 255, 0.88);
+    border-bottom: 1px solid rgba(214, 40, 40, 0.12);
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+}
+
+.header-inner {
+    width: min(1240px, calc(100% - 32px));
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 14px 0;
+}
+
+.brand-block {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    gap: 2px;
 }
 
-header {
-    width: 100%;
-    max-width: 1200px;
-    padding: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-}
-
-h1 {
-    color: #d32f2f;
+.brand {
     margin: 0;
-    font-size: 2.5em;
+    font-size: clamp(1.7rem, 4vw, 2.5rem);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: #1f2937;
 }
 
-.espace-admin {
-    position: absolute;
-    right: 20px;
-    top: 50%;
-    transform: translateY(-50%);
-    text-decoration: none;
-    background-color: #d32f2f;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 50px;
-    font-size: 0.85em;
-    font-weight: bold;
-    box-shadow: 0 4px 10px rgba(211, 47, 47, 0.3);
-    transition: all 0.3s ease;
-    border: 2px solid transparent;
+.brand-tagline {
+    margin: 0;
+    color: #8a5b49;
+    font-size: 0.92rem;
 }
 
-.espace-admin:hover {
-    background-color: white;
-    color: #d32f2f;
-    border: 2px solid #d32f2f;
-    transform: translateY(-52%) scale(1.05);
-}
-
-/* Estilo específico para o botão de voltar no Admin (opcional) */
-.btn-retour {
-    background-color: #444;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-}
-
-.btn-retour:hover {
-    background-color: white;
-    color: #444;
-    border: 2px solid #444;
-}
-
-.filters {
-    margin: 20px 0 40px 0;
-}
-
-.btn-filter {
-    background-color: #444;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 6px;
-    margin: 0 5px;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-.main-content {
+.nav-actions {
     display: flex;
-    gap: 30px;
-    width: 100%;
-    max-width: 1200px;
-    justify-content: center;
-    align-items: flex-start;
-    margin-bottom: 50px;
-}
-
-.menu-grid {
-    display: flex;
+    gap: 10px;
+    align-items: center;
     flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
-    width: 60%;
 }
 
-.sushi-card {
-    background: white;
-    border: 1px solid #ddd;
-    border-radius: 12px;
-    width: 250px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-    text-align: center;
-    overflow: hidden;
+.nav-link,
+.btn-logout,
+.role-badge {
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.95rem;
 }
 
-.sushi-img-container {
-    width: 100%;
-    height: 180px;
-}
-
-.sushi-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.card-content {
-    padding: 15px;
-}
-
-.category-tag {
-    font-size: 0.75em;
-    color: #888;
-    text-transform: uppercase;
-    display: block;
-}
-
-.price {
+.nav-link,
+.btn-logout {
+    text-decoration: none;
+    border: 1px solid rgba(214, 40, 40, 0.22);
     color: #d32f2f;
-    font-weight: bold;
-    font-size: 1.3em;
-}
-
-.form-box {
     background: white;
-    width: 350px;
-    padding: 30px;
-    border-radius: 10px;
-    border-top: 6px solid #d32f2f;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-}
-
-input, select {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 20px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    box-sizing: border-box;
-}
-
-button.btn-commander {
-    background-color: #d32f2f;
-    color: white;
-    border: none;
-    padding: 10px;
-    border-radius: 6px;
+    padding: 10px 16px;
     cursor: pointer;
-    font-weight: bold;
-    width: 100%;
+    transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
 }
 
-.table-container {
-    max-width: 900px;
-    margin: 20px auto;
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
+.nav-link:hover,
+.btn-logout:hover {
+    background: linear-gradient(135deg, #d32f2f, #ef4444);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px rgba(211, 47, 47, 0.18);
 }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
+.nav-link:focus-visible,
+.btn-logout:focus-visible {
+    outline: 3px solid rgba(214, 40, 40, 0.22);
+    outline-offset: 2px;
 }
 
-th, td {
-    padding: 12px;
-    border-bottom: 1px solid #eee;
-    text-align: left;
-}/* You can add global styles to this file, and also import other style files */
+.role-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 14px;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    background: #fff5f1;
+    color: #9a3412;
+}
+
+.role-badge.user {
+    background: #f1f5f9;
+    color: #334155;
+}
+
+.admin-link {
+    background: linear-gradient(135deg, #b91c1c, #dc2626) !important;
+    color: white !important;
+    border: 1px solid rgba(185, 28, 28, 0.3) !important;
+}
+
+.admin-link:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 12px 22px rgba(185, 28, 28, 0.24) !important;
+}
+
+@media (max-width: 760px) {
+    .header-inner {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 16px 0;
+    }
+
+    .nav-actions {
+        width: 100%;
+    }
+}

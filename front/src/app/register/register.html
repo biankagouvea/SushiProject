@@ -1,6 +1,37 @@
-<h2>register</h2>
+<section class="auth-page auth-register">
+  <div class="auth-hero">
+    <p class="eyebrow">Créer un compte</p>
+    <h2>Rejoignez Sushi Talence</h2>
+    <p>
+      Créez votre compte pour commander en ligne, suivre vos achats et, si besoin, activer le profil administrateur.
+    </p>
 
-<input [(ngModel)]="email" placeholder="email">
-<input [(ngModel)]="password" type="password" placeholder="password">
+    <div class="auth-points">
+      <div>
+        <strong>Commande rapide</strong>
+        <span>Une inscription en quelques secondes</span>
+      </div>
+      <div>
+        <strong>Compte sécurisé</strong>
+        <span>Vos données restent protégées</span>
+      </div>
+    </div>
+  </div>
 
-<button (click)="register()">s'inscrire </button>
+  <div class="auth-card">
+    <h3>Inscription</h3>
+
+    <label for="register-email">Email</label>
+    <input id="register-email" [(ngModel)]="email" name="email" type="email" placeholder="exemple@email.com" autocomplete="email">
+
+    <label for="register-password">Mot de passe</label>
+    <input id="register-password" [(ngModel)]="password" name="password" type="password" placeholder="Choisissez un mot de passe" autocomplete="new-password">
+
+    <label class="admin-toggle" for="register-admin">
+      <input id="register-admin" type="checkbox" [(ngModel)]="isAdmin" name="isAdmin">
+      Je suis administrateur
+    </label>
+
+    <button class="primary-action" (click)="register()">S'inscrire</button>
+  </div>
+</section>

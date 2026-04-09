@@ -1,7 +1,23 @@
-<h2>Login</h2>
+<section class="auth-page auth-login">
+	<div class="auth-hero">
+		<p class="eyebrow">Connexion</p>
+		<h2>Reconnectez-vous à Sushi Talence</h2>
+		<p>
+			Consultez vos commandes, reprenez votre panier et passez de nouvelles commandes en quelques secondes.
+		</p>
 
-<input [(ngModel)]="email" placeholder="Email">
-<input [(ngModel)]="password" type="password" placeholder="Mot de passe">
+	</div>
 
-<button (click)="connexion()">Se connecter</button>
-<button (click)="allerAuRegister()">Pas de compte? s'inscrire</button>
+	<div class="auth-card">
+		<h3>Connexion</h3>
+
+		<label for="login-email">Email</label>
+		<input id="login-email" [(ngModel)]="email" name="email" type="email" placeholder="exemple@email.com" autocomplete="email">
+
+		<label for="login-password">Mot de passe</label>
+		<input id="login-password" [(ngModel)]="password" name="password" type="password" placeholder="Votre mot de passe" autocomplete="current-password">
+
+		<button class="primary-action" (click)="connexion()">Se connecter</button>
+		<button class="secondary-action" (click)="allerAuRegister()">Pas de compte ? S'inscrire</button>
+	</div>
+</section>

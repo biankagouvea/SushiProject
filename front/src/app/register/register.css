@@ -1,0 +1,6 @@
+@import url('../login/login.css');
+
+:host {
+	display: block;
+}
+

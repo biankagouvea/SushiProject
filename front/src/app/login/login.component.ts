@@ -23,16 +23,26 @@ export class LoginComponent {
   ) {} //constructeur
   
   connexion() {
-    console.log('Connexion:', this.email, this.password);
-	if (!this.email || !this.password) {
+	const email = this.email.trim().toLowerCase();
+	const password = this.password.trim();
+
+	if (!email || !password) {
 	  alert('Veuillez remplir les champs');
 	  return;
 	}
-	if (this.auth.connexion(this.email, this.password)) {
-	    this.router.navigate(['/menu']);
-	  } else {
-	  alert('Erreur de connexion');
-	}
+
+  this.auth.connexion(email, password).subscribe({
+    next: (ok: boolean) => {
+      if (ok) {
+        this.router.navigate(['/menu']);
+      } else {
+        alert(this.auth.getDernierMessage() || 'Email ou mot de passe incorrect');
+      }
+    },
+    error: () => {
+      alert(this.auth.getDernierMessage() || 'Serveur indisponible ou URL API incorrecte');
+    }
+  });
   }
   
   allerAuRegister() {

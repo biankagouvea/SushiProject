@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.example</groupId>
 	<artifactId>demo</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>Version 1-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<name/>
 	<description/>
@@ -29,6 +29,8 @@
 	</scm>
 	<properties>
 		<java.version>17</java.version>
+		<m2eclipse.wtp.contextRoot>/</m2eclipse.wtp.contextRoot>
+		<m2eclipse.wtp.deployName>ROOT</m2eclipse.wtp.deployName>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -54,6 +56,7 @@
 	</dependencies>
 
 	<build>
+		<finalName>ROOT</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>

@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SushiService, Commande, ArticleCommande } from '../services/sushi.service';
+import { AuthService } from '../auth/auth.service';
 
 @Component({
   selector: 'app-menu',
@@ -15,6 +16,7 @@ export class MenuComponent implements OnInit {
   sushis: any[] = [];
   panier: any[] = [];
   totalGlobal: number = 0;
+  historiqueCommandes: Commande[] = [];
 
   categorieSelectionnee: string = 'TOUS';
 
@@ -25,21 +27,54 @@ export class MenuComponent implements OnInit {
   messageErreurText: string | null = null;
   envoiEnCours: boolean = false;
 
-  constructor(private sushiService: SushiService) {}
+  constructor(
+    private sushiService: SushiService,
+    public authService: AuthService,
+    private ngZone: NgZone
+  ) {}
 
   // =====================
   // INITIALISATION
   // =====================
   ngOnInit(): void {
     this.chargerSushis();
+    this.chargerHistorique();
+  }
+
+  chargerHistorique(): void {
+    const email = this.authService.emailConnecte();
+    console.log('📧 Email connecté:', email);
+
+    if (!email) {
+      console.log('❌ Pas d\'email, historique vide');
+      this.historiqueCommandes = [];
+      return;
+    }
+
+    console.log('🔄 Chargement historique pour:', email);
+    this.sushiService.obtenirHistoriqueCommandes(email).subscribe({
+      next: (donnees: Commande[]) => {
+        console.log('✅ Historique reçu:', donnees);
+        this.ngZone.run(() => {
+          this.historiqueCommandes = donnees;
+          console.log('📋 Historique mis à jour:', this.historiqueCommandes.length, 'commandes');
+        });
+      },
+      error: (err: any) => {
+        console.error('❌ Erreur chargement historique:', err);
+        this.historiqueCommandes = [];
+      }
+    });
   }
 
   chargerSushis(): void {
     this.sushiService.obtenirSushis().subscribe({
       next: (donnees: any[]) => {
-        this.sushis = donnees;
-        // Initialiser quantité à 0
-        this.sushis.forEach(s => s.qty = 0);
+        this.ngZone.run(() => {
+          this.sushis = donnees;
+          // Initialiser quantité à 0
+          this.sushis.forEach(s => s.qty = 0);
+        });
       },
       error: (err: any) => {
         console.error('Erreur chargement sushis:', err);
@@ -102,8 +137,16 @@ export class MenuComponent implements OnInit {
       return;
     }
 
+    const userEmail = this.authService.emailConnecte();
+
+    if (!userEmail) {
+      alert('Veuillez vous connecter pour passer commande');
+      return;
+    }
+
     // Préparer la commande
     const commande: Commande = {
+      userEmail,
       nomClient: this.nomClient,
       adresse: this.adresse,
       items: this.panier
@@ -117,18 +160,36 @@ export class MenuComponent implements OnInit {
     this.sushiService.creerCommande(commande).subscribe({
       next: (reponse: any) => {
         console.log('Commande envoyée avec succès:', reponse);
-        // Afficher succès (si backend retourne un id, l'inclure)
-        this.envoiEnCours = false;
-        const id = reponse && reponse.id ? reponse.id : null;
-        this.messageSuccesText = id ? `Commande ${id} envoyée avec succès !` : 'Commande envoyée avec succès ! Merci pour votre achat.';
+        this.ngZone.run(() => {
+          this.envoiEnCours = false;
+          
+          // Créer la commande locale pour l'affichage immédiat
+          const nouvelleCommande: Commande = {
+            id: reponse?.id || Math.random(),
+            userEmail: this.authService.emailConnecte() || '',
+            nomClient: this.nomClient,
+            adresse: this.adresse,
+            date: new Date().toISOString(),
+            total: this.totalGlobal,
+            items: [...this.panier]
+          };
+          
+          // Ajouter immédiatement à l'historique local (affichage instantané)
+          this.historiqueCommandes.unshift(nouvelleCommande);
+          const commandeNumber = 1; // C'est la première puisqu'on vient de l'ajouter en tête
+          this.messageSuccesText = `Commande #${commandeNumber} envoyée avec succès !`;
 
-        // Réinitialiser après 2 secondes (mais laisser le message affiché, l'utilisateur peut fermer)
-        setTimeout(() => {
-          this.panier = [];
-          this.totalGlobal = 0;
-          this.nomClient = '';
-          this.adresse = '';
-        }, 2000);
+          // Recharger l'historique depuis le serveur (pour synchroniser)
+          this.chargerHistorique();
+
+          // Réinitialiser après 2 secondes (mais laisser le message affiché, l'utilisateur peut fermer)
+          setTimeout(() => {
+            this.panier = [];
+            this.totalGlobal = 0;
+            this.nomClient = '';
+            this.adresse = '';
+          }, 2000);
+        });
       },
       error: (err: any) => {
         console.error('Erreur envoi commande:', err);

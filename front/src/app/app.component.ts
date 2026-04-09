@@ -7,18 +7,29 @@ import { AuthService } from './auth/auth.service';
   selector: 'app-root',
   standalone: true,
   imports: [CommonModule, RouterOutlet, RouterLink],
+  styleUrls: ['./app.css'],
   template: `
     <header class="global-header">
       <div class="header-inner">
-  <h1 class="brand">Sushi Talence</h1>
+        <div class="brand-block">
+          <h1 class="brand">Sushi Talence</h1>
+        </div>
 
-        <nav class="nav-actions">
+        <nav class="nav-actions" aria-label="Navigation principale">
           <a routerLink="/" class="nav-link">Accueil</a>
           <a routerLink="/menu" class="nav-link">Menu</a>
-          <a routerLink="/register" *ngIf="!auth.estConnecte()" class="nav-link">S'inscrire</a>
-          <a routerLink="/login" *ngIf="!auth.estConnecte()" class="nav-link">Connexion</a>
 
-          <button *ngIf="auth.estConnecte()" class="btn-logout" (click)="deconnexion()">Déconnexion</button>
+          @if (!auth.estConnecte()) {
+            <a routerLink="/register" class="nav-link">S'inscrire</a>
+            <a routerLink="/login" class="nav-link">Connexion</a>
+          } @else {
+            @if (auth.estAdmin()) {
+              <a routerLink="/admin" class="nav-link admin-link">Admin</a>
+            } @else {
+              <span class="role-badge user">Client</span>
+            }
+            <button class="btn-logout" (click)="deconnexion()">Déconnexion</button>
+          }
         </nav>
       </div>
     </header>

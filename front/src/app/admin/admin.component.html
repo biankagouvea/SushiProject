@@ -8,66 +8,110 @@
 
 <div class="admin-container">
 
+  <!-- Section Gestion des Sushis -->
   <div class="form-box">
     <h2>Ajouter un Sushi</h2>
 
     <form (submit)="ajouterSushi($event)">
       <label for="nom">Nom:</label>
-      <input id="nom" type="text" name="nom" required>
+      <input id="nom" type="text" name="nom" placeholder="Ex: Maki Saumon" required>
 
       <label for="categorie">Catégorie:</label>
-      <select id="categorie" name="categorie">
+      <select id="categorie" name="categorie" required>
+        <option value="">-- Sélectionner --</option>
         <option>Maki</option>
         <option>Nigiri</option>
         <option>Sashimi</option>
       </select>
 
       <label for="prix">Prix (€):</label>
-      <input id="prix" type="number" step="0.01" name="prix" required>
+      <input id="prix" type="number" step="0.01" name="prix" min="0" placeholder="Ex: 7.50" required>
+
+      <label for="stock">Stock disponible:</label>
+      <input id="stock" type="number" name="stock" min="0" placeholder="Ex: 20" required>
 
       <label for="image">URL Image:</label>
-      <input id="image" type="text" name="image">
+      <input id="image" type="text" name="image" placeholder="https://...">
 
       <button type="submit" class="btn-commander">
-        Sauvegarder
+        Sauvegarder Sushi
       </button>
     </form>
   </div>
 
+  <!-- Section Commandes -->
   <div class="table-container">
     <h2>Commandes reçues</h2>
 
-    <div *ngIf="chargementEnCours" style="text-align: center; color: #666;">
-      Chargement des commandes...
-    </div>
+    @if (commandes.length > 0) {
+      <table class="commandes-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Client</th>
+            <th>Email</th>
+            <th>Adresse</th>
+            <th>Date</th>
+            <th>Montant</th>
+            <th>Détails</th>
+          </tr>
+        </thead>
 
-    <table *ngIf="commandes.length > 0 && !chargementEnCours; else aucuneCommande">
-      <thead>
-        <tr>
-          <th>Client</th>
-          <th>Adresse</th>
-          <th>Articles</th>
-        </tr>
-      </thead>
+        <tbody>
+          @for (commande of commandes; track commande.id) {
+            <tr (click)="toggleDetails(commande.id || 1)" class="commande-row">
+              <td>{{ commande.id }}</td>
+              <td>{{ commande.nomClient }}</td>
+              <td>{{ commande.userEmail }}</td>
+              <td>{{ commande.adresse }}</td>
+              <td>{{ commande.date | date: 'dd/MM/yyyy HH:mm' }}</td>
+              <td class="prix-total">{{ commande.total | currency: 'EUR' }}</td>
+              <td class="btn-details">
+                <button (click)="toggleDetails(commande.id || 1); $event.stopPropagation()" class="btn-expand">
+                  {{ displayedDetails === (commande.id || 1) ? '▼' : '►' }}
+                </button>
+              </td>
+            </tr>
 
-      <tbody>
-        <tr *ngFor="let commande of commandes">
-          <td>{{ commande.nomClient }}</td>
-          <td>{{ commande.adresse }}</td>
-          <td>
-            <div *ngFor="let article of commande.items">
-              {{ article.nom }} x {{ article.quantite }}
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-
-    <ng-template #aucuneCommande>
-      <p style="text-align: center; padding: 20px; color: #999;">
-        Aucune commande pour le moment
-      </p>
-    </ng-template>
+            @if (displayedDetails === (commande.id || 1)) {
+              <tr class="details-row">
+                <td colspan="7" class="details-content">
+                  <div class="order-details">
+                    <h4>Articles commandés:</h4>
+                    <ul>
+                      @for (article of commande.items; track article.nom) {
+                        <li>
+                          <strong>{{ article.nom }}</strong> - {{ article.prix }}€ x {{ article.quantite }} = <strong>{{ (article.prix * article.quantite) | currency: 'EUR' }}</strong>
+                        </li>
+                      }
+                    </ul>
+                    <div class="details-summary">
+                      <p><strong>Adresse de livraison:</strong> {{ commande.adresse }}</p>
+                      <p><strong>Email client:</strong> {{ commande.userEmail }}</p>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+      @if (chargementEnCours) {
+        <div style="text-align: center; color: #999; padding: 10px; font-size: 0.9em;">
+          ⟳ Mise à jour en cours...
+        </div>
+      }
+    } @else {
+      @if (chargementEnCours) {
+        <div style="text-align: center; color: #666; padding: 20px;">
+          Chargement des commandes...
+        </div>
+      } @else {
+        <p style="text-align: center; padding: 20px; color: #999;">
+          Aucune commande pour le moment
+        </p>
+      }
+    }
   </div>
 
 </div>

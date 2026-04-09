@@ -1,8 +1,8 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, NgZone, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { SushiService, Commande } from '../services/sushi.service';
+import { SushiService, Commande, NouveauSushi } from '../services/sushi.service';
 import { AuthService } from '../auth/auth.service';
 
 @Component({
@@ -17,11 +17,14 @@ export class AdminComponent implements OnInit, OnDestroy {
   commandes: Commande[] = [];
   intervalId: any;
   chargementEnCours: boolean = false;
+  displayedDetails: number | null = null;
 
   constructor(
     private router: Router,
     private sushiService: SushiService,
-    private authService: AuthService
+    private authService: AuthService,
+    private ngZone: NgZone,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -42,17 +45,25 @@ export class AdminComponent implements OnInit, OnDestroy {
 
   chargerCommandes(): void {
     this.chargementEnCours = true;
+    console.log('🔄 Chargement admin - commandes...');
     this.sushiService.obtenirCommandes().subscribe({
       next: (donnees: Commande[]) => {
-        console.log("Commandes reçues:", donnees);
+        console.log('✅ Admin - Commandes reçues:', donnees.length, 'commandes');
         this.commandes = donnees;
         this.chargementEnCours = false;
+        console.log('📋 Admin - Commandes affichées:', this.commandes.length);
+        // Force la détection de changement Angular
+        this.cdr.detectChanges();
       },
       error: (err: any) => {
-        console.error("Erreur chargement commandes:", err);
+        console.error("❌ Admin - Erreur chargement commandes:", err);
         this.chargementEnCours = false;
       }
     });
+  }
+
+  toggleDetails(commandeId: number): void {
+    this.displayedDetails = this.displayedDetails === commandeId ? null : commandeId;
   }
 
   allerAuMenu(): void {
@@ -70,14 +81,32 @@ export class AdminComponent implements OnInit, OnDestroy {
 
     const nom = event.target.nom.value;
     const categorie = event.target.categorie.value;
-    const prix = event.target.prix.value;
+    const prix = Number(event.target.prix.value);
     const image = event.target.image.value;
 
-    console.log("Sushi à ajouter:", { nom, categorie, prix, image });
+    if (!nom || !categorie || !prix || prix <= 0) {
+      alert("Veuillez remplir correctement les champs");
+      return;
+    }
 
-    alert("Fonction 'Ajouter Sushi' non implémentée (à faire au backend)");
+    const nouveauSushi: NouveauSushi = {
+      nom,
+      categorie,
+      prix,
+      image,
+      stock: 10
+    };
 
-    event.target.reset();
+    this.sushiService.creerSushi(nouveauSushi).subscribe({
+      next: () => {
+        alert("Sushi ajouté avec succès");
+        event.target.reset();
+      },
+      error: (err: any) => {
+        console.error("Erreur ajout sushi:", err);
+        alert("Erreur lors de l'ajout du sushi");
+      }
+    });
   }
 }
 
