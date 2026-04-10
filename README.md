@@ -19,7 +19,6 @@ Un espace administrateur permet de gérer les produits et consulter les commande
 - Serveur : Apache Tomcat (compatible WAR)
 
 ---
-
 ## ▶️ Exécution
 
 ### Back-end (Spring Boot)
@@ -27,13 +26,19 @@ Un espace administrateur permet de gérer les produits et consulter les commande
 ```bash
 cd back
 mvn spring-boot:run
+
 Serveur disponible sur :
 http://localhost:8084
+ ```
 
 Front-end (Angular)
+### Front-end (Angular)
+
+```bash
 cd front
 npm install
 ng serve
+ ```
 
 Application disponible sur :
 http://localhost:4200
