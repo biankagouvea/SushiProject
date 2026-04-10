@@ -1,15 +1,13 @@
-
-````markdown
 # 🍣 Projet Sushi – Application de commande
 
 ## 📌 Description
 
-Ce projet est une application web permettant de :
+Application web permettant de :
 - consulter un menu de sushis
 - passer une commande
 - gérer un compte utilisateur
 
-Un espace administrateur permet également de gérer les produits et consulter les commandes.
+Un espace administrateur permet de gérer les produits et consulter les commandes.
 
 ---
 
@@ -29,51 +27,32 @@ Un espace administrateur permet également de gérer les produits et consulter l
 ```bash
 cd back
 mvn spring-boot:run
-````
-
 Serveur disponible sur :
-[http://localhost:8084](http://localhost:8084)
+http://localhost:8084
 
----
-
-### Front-end (Angular)
-
-```bash
+Front-end (Angular)
 cd front
 npm install
 ng serve
-```
 
 Application disponible sur :
-[http://localhost:4200](http://localhost:4200)
+http://localhost:4200
 
----
+🔗 API
 
-## 🔗 API
+Le front-end communique avec le back-end via une API REST :
+http://localhost:8084
 
-Le front-end communique avec le back-end via une API REST disponible sur :
-[http://localhost:8084](http://localhost:8084)
+⚠️ Remarque
 
----
+Le projet est compatible avec un déploiement sur Apache Tomcat (WAR),
+mais est exécuté ici avec Spring Boot pour simplifier l'utilisation.
 
-## ⚠️ Remarque
+🌐 GitHub
 
-Le projet est compatible avec un déploiement sur Apache Tomcat via un fichier WAR.
-Cependant, pour simplifier l’exécution, il est lancé ici avec Spring Boot.
+Branche utilisée : Sushi(new)
 
----
-
-## 🌐 GitHub
-
-Branche utilisée : **Sushi(new)**
-
----
-
-## 👥 Auteurs
-
-* Huiying Zhou
-* Bianka Gouvêa
-* Noufel Bouguerra
-
-```
-
+👥 Auteurs
+Huiying Zhou
+Bianka Gouvêa
+Noufel Bouguerra
