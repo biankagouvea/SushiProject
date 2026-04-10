@@ -23,6 +23,7 @@ export interface Commande {
 }
 
 export interface NouveauSushi {
+  id?: number;
   nom: string;
   categorie: string;
   prix: number;
@@ -104,5 +105,10 @@ export class SushiService {
   // Ajouter un nouveau sushi
   creerSushi(sushi: NouveauSushi): Observable<any> {
     return this.http.post(`${this.baseUrl}/sushis`, sushi);
+  }
+
+  // Mettre à jour un sushi existant
+  mettreAJourSushi(id: number, sushi: NouveauSushi): Observable<any> {
+    return this.http.put(`${this.baseUrl}/sushis/${id}`, sushi);
   }
 }

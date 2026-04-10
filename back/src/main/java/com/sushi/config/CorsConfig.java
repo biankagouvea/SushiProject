@@ -6,8 +6,17 @@ import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
+/**
+ * Configuration Web MVC:
+ * CORS pour le mode developpement Angular et fallback SPA pour les routes front.
+ */
 public class CorsConfig {
 
+    /**
+     * Declare le customizer WebMvc.
+     *
+     * @return configuration CORS et routes front vers index.html
+     */
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {

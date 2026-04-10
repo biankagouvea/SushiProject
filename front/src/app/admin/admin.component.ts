@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { SushiService, Commande, NouveauSushi } from '../services/sushi.service';
 import { AuthService } from '../auth/auth.service';
+import { Sushi } from '../sushi/sushi';
 
 @Component({
   selector: 'app-admin',
@@ -15,6 +16,8 @@ import { AuthService } from '../auth/auth.service';
 export class AdminComponent implements OnInit, OnDestroy {
 
   commandes: Commande[] = [];
+  sushis: Sushi[] = [];
+  stockAjouts: Record<number, number> = {};
   intervalId: any;
   chargementEnCours: boolean = false;
   displayedDetails: number | null = null;
@@ -29,11 +32,23 @@ export class AdminComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.chargerCommandes();
+    this.chargerSushis();
 
     // Polling chaque 3 secondes pour mettre à jour les commandes
     this.intervalId = setInterval(() => {
       this.chargerCommandes();
     }, 3000);
+  }
+
+  chargerSushis(): void {
+    this.sushiService.obtenirSushis().subscribe({
+      next: (donnees: Sushi[]) => {
+        this.sushis = donnees;
+      },
+      error: (err: any) => {
+        console.error('Erreur chargement sushis admin:', err);
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -82,9 +97,10 @@ export class AdminComponent implements OnInit, OnDestroy {
     const nom = event.target.nom.value;
     const categorie = event.target.categorie.value;
     const prix = Number(event.target.prix.value);
+    const stock = Number(event.target.stock.value);
     const image = event.target.image.value;
 
-    if (!nom || !categorie || !prix || prix <= 0) {
+    if (!nom || !categorie || !prix || prix <= 0 || stock < 0) {
       alert("Veuillez remplir correctement les champs");
       return;
     }
@@ -94,17 +110,51 @@ export class AdminComponent implements OnInit, OnDestroy {
       categorie,
       prix,
       image,
-      stock: 10
+      stock
     };
 
     this.sushiService.creerSushi(nouveauSushi).subscribe({
       next: () => {
         alert("Sushi ajouté avec succès");
         event.target.reset();
+        this.chargerSushis();
       },
       error: (err: any) => {
         console.error("Erreur ajout sushi:", err);
         alert("Erreur lors de l'ajout du sushi");
+      }
+    });
+  }
+
+  ajouterStock(sushi: Sushi): void {
+    const sushiId = sushi.id;
+    if (!sushiId) {
+      return;
+    }
+
+    const ajout = Number(this.stockAjouts[sushiId] || 0);
+
+    if (ajout <= 0) {
+      alert('Entrez une quantité de stock positive.');
+      return;
+    }
+
+    const payload: NouveauSushi = {
+      nom: sushi.nom,
+      categorie: sushi.categorie,
+      prix: sushi.prix,
+      image: sushi.image,
+      stock: (sushi.stock || 0) + ajout
+    };
+
+    this.sushiService.mettreAJourSushi(sushiId, payload).subscribe({
+      next: () => {
+        this.stockAjouts[sushiId] = 0;
+        this.chargerSushis();
+      },
+      error: (err: any) => {
+        console.error('Erreur mise à jour stock:', err);
+        alert('Erreur lors de la mise à jour du stock');
       }
     });
   }

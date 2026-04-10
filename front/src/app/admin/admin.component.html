@@ -37,6 +37,45 @@
         Sauvegarder Sushi
       </button>
     </form>
+
+    <hr style="margin: 20px 0; border: 0; border-top: 1px solid #eee;">
+    <h2>Gérer le stock existant</h2>
+
+    @if (sushis.length > 0) {
+      <table class="commandes-table">
+        <thead>
+          <tr>
+            <th>Sushi</th>
+            <th>Catégorie</th>
+            <th>Stock actuel</th>
+            <th>Ajouter</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (sushi of sushis; track sushi.id) {
+            <tr>
+              <td>{{ sushi.nom }}</td>
+              <td>{{ sushi.categorie }}</td>
+              <td><strong>{{ sushi.stock ?? 0 }}</strong></td>
+              <td>
+                <input
+                  type="number"
+                  min="1"
+                  [(ngModel)]="stockAjouts[sushi.id || 0]"
+                  style="width: 90px;"
+                >
+              </td>
+              <td>
+                <button class="btn-expand" (click)="ajouterStock(sushi)">+ Stock</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    } @else {
+      <p style="color: #777;">Aucun sushi disponible.</p>
+    }
   </div>
 
   <!-- Section Commandes -->
